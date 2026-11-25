@@ -7,6 +7,7 @@ test('ランクの境目', () => {
   assert.equal(rankOf(23, 20), 'A');
   assert.equal(rankOf(24, 20), 'B');
   assert.equal(rankOf(28, 20), 'B');
+  assert.equal(rankOf(63, 45), 'B'); // 45 * 1.4 が浮動小数で 62.999… になる境目
   assert.equal(rankOf(29, 20), 'C');
 });
 

@@ -1,7 +1,8 @@
 export function rankOf(moves, optimal) {
   if (moves <= optimal) return 'S';
-  if (moves <= optimal * 1.15) return 'A';
-  if (moves <= optimal * 1.4) return 'B';
+  // 浮動小数の誤差を避けるため整数で比べる
+  if (moves * 100 <= optimal * 115) return 'A';
+  if (moves * 100 <= optimal * 140) return 'B';
   return 'C';
 }
 
