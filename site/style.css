@@ -28,12 +28,12 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
 .stat { font-family: ui-monospace, Consolas, monospace; font-size: 15px; }
 .spacer { flex: 1; }
 
-.board { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 16px; padding: 40px 0 20px; }
+.board { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 16px; padding: 40px 0 20px; }
 .tube {
   appearance: none; background: transparent; width: 44px; height: 156px; box-sizing: border-box;
   border: 2px solid var(--glass); border-top: none; border-radius: 0 0 22px 22px;
   padding: 0 3px 3px; display: flex; flex-direction: column-reverse; transition: transform 0.12s;
-  touch-action: manipulation;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
 .tube:hover { background: transparent; }
 .tube.selected { transform: translateY(-18px); border-color: var(--text); }
@@ -82,5 +82,5 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
 
 @media (max-width: 560px) {
   .settings { grid-template-columns: 1fr; justify-items: center; }
-  .board { gap: 12px 10px; }
+  .board { gap: 24px 10px; }
 }

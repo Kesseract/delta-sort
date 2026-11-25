@@ -152,6 +152,8 @@ function renderSettings() {
 }
 
 function update(patch, { regenerate = true } = {}) {
+  // 今と同じ値を押しただけなら、進行中の問題を消さない
+  if (Object.entries(patch).every(([k, v]) => settings[k] === v)) return;
   settings = { ...settings, ...patch };
   saveSettings(storage, settings);
   if (regenerate) startProblem();
