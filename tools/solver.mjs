@@ -5,17 +5,19 @@ export function stateKey(tubes) {
   return tubes.map((t) => t.join(',')).sort().join('|');
 }
 
-// 色の区切りの数 − 色の数。1手で高々1しか減らないので許容的。
+// 下限。各試験管の一番下以外の区切りは少なくとも1回動く。
+// 同じ色が複数の試験管の底にあれば、1本を残して底ごと動く。
+// 1手で減るのは高々1（普通・ハードの両方で成り立つ）ので、許容的かつ一貫的。
 export function heuristic(tubes) {
-  let segments = 0;
-  const colors = new Set();
+  let h = 0;
+  const bottoms = new Map();
   for (const t of tubes) {
-    for (let k = 0; k < t.length; k++) {
-      colors.add(t[k]);
-      if (k === 0 || t[k] !== t[k - 1]) segments++;
-    }
+    if (t.length === 0) continue;
+    bottoms.set(t[0], (bottoms.get(t[0]) ?? 0) + 1);
+    for (let k = 1; k < t.length; k++) if (t[k] !== t[k - 1]) h++;
   }
-  return segments - colors.size;
+  for (const b of bottoms.values()) h += b - 1;
+  return h;
 }
 
 // 1色だけの試験管を空へ丸ごと移す手は、並べ替えと同じなので除く
@@ -24,7 +26,7 @@ function isPointless(tubes, from, to) {
   return tubes[to].length === 0 && a.every((c) => c === a[0]);
 }
 
-export function solve(start, { cap = CAPACITY, maxNodes = 1_000_000 } = {}) {
+export function solve(start, { cap = CAPACITY, maxNodes = 1_000_000, mixed = false } = {}) {
   if (isSolved(start, cap)) return 0;
   const buckets = [];
   const bestG = new Map();
@@ -45,8 +47,8 @@ export function solve(start, { cap = CAPACITY, maxNodes = 1_000_000 } = {}) {
     if (++expanded > maxNodes) return null;
     for (let from = 0; from < tubes.length; from++) {
       for (let to = 0; to < tubes.length; to++) {
-        if (!canPour(tubes, from, to, cap) || isPointless(tubes, from, to)) continue;
-        const next = pour(tubes, from, to, cap);
+        if (!canPour(tubes, from, to, cap, mixed) || isPointless(tubes, from, to)) continue;
+        const next = pour(tubes, from, to, cap, mixed);
         const key = stateKey(next);
         const old = bestG.get(key);
         if (old !== undefined && old <= g + 1) continue;

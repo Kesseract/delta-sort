@@ -17,6 +17,7 @@ test('各問題の形が正しい', () => {
       assert.equal(p.tubes.length, n);
       assert.equal(isSolved(p.tubes), false);
       assert.ok(Number.isInteger(p.optimal) && p.optimal > 0);
+      assert.ok(Number.isInteger(p.optimalHard) && p.optimalHard > 0 && p.optimalHard <= p.optimal);
       const counts = new Map();
       p.tubes.flat().forEach((c) => counts.set(c, (counts.get(c) ?? 0) + 1));
       assert.equal(counts.size, n - EMPTY_TUBES);
@@ -27,5 +28,8 @@ test('各問題の形が正しい', () => {
 });
 
 test('6本の先頭10問は最短手数を再計算して一致する', () => {
-  for (const p of data['6'].slice(0, 10)) assert.equal(solve(p.tubes), p.optimal);
+  for (const p of data['6'].slice(0, 10)) {
+    assert.equal(solve(p.tubes), p.optimal);
+    assert.equal(solve(p.tubes, { mixed: true }), p.optimalHard);
+  }
 });

@@ -17,7 +17,9 @@ export function generate(tubeCount, count, { seed, maxNodes, maxAttempts }) {
     seen.add(key);
     const optimal = solve(tubes, { maxNodes });
     if (optimal === null) continue;
-    out.push({ tubes, optimal });
+    const optimalHard = solve(tubes, { maxNodes, mixed: true });
+    if (optimalHard === null) continue;
+    out.push({ tubes, optimal, optimalHard });
   }
   return out;
 }
@@ -46,7 +48,8 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     });
     const list = result[String(n)];
     const opts = list.map((p) => p.optimal);
-    console.log(`${n}本: ${list.length}問 最短${Math.min(...opts)}〜${Math.max(...opts)}手 ${((Date.now() - t0) / 1000).toFixed(1)}秒`);
+    const hards = list.map((p) => p.optimalHard);
+    console.log(`${n}本: ${list.length}問 最短${Math.min(...opts)}〜${Math.max(...opts)}手（ハード${Math.min(...hards)}〜${Math.max(...hards)}手） ${((Date.now() - t0) / 1000).toFixed(1)}秒`);
   }
   writeFileSync(args.out, JSON.stringify(result) + '\n');
   console.log(`書き出し: ${args.out}`);

@@ -56,3 +56,15 @@ test('やり直しで最初の盤面・0手に戻る', () => {
   assert.deepEqual(g.tubes, [[0, 1], [1, 0], []]);
   assert.equal(moveCount(g), 0);
 });
+
+test('ハードのゲームは違う色の上にも注げる', () => {
+  const g = newGame([[0, 1], [1, 0], []], { mixed: true });
+  assert.equal(g.mixed, true);
+  const after = tap(tap(g, 0), 1);
+  assert.deepEqual(after.tubes, [[0], [1, 0, 1], []]);
+  assert.equal(moveCount(after), 1);
+});
+
+test('初期値は普通ルール', () => {
+  assert.equal(start().mixed, false);
+});

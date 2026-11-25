@@ -13,7 +13,10 @@ test('指定数だけ、解けていない重複なしの問題を作る', () =>
     assert.equal(p.tubes.length, 6);
     assert.equal(isSolved(p.tubes), false);
     assert.ok(Number.isInteger(p.optimal) && p.optimal > 0);
+    assert.ok(Number.isInteger(p.optimalHard) && p.optimalHard > 0);
+    assert.ok(p.optimalHard <= p.optimal);
     assert.equal(solve(p.tubes), p.optimal);
+    assert.equal(solve(p.tubes, { mixed: true }), p.optimalHard);
   }
 });
 

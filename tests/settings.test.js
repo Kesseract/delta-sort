@@ -9,19 +9,20 @@ const memory = (init = {}) => {
 
 test('初期値', () => {
   assert.deepEqual(TUBE_OPTIONS, [6, 8, 10, 12, 14]);
-  assert.deepEqual(DEFAULT_SETTINGS, { tubes: 10, hue: null, showAnswer: true });
+  assert.deepEqual(DEFAULT_SETTINGS, { tubes: 10, hue: null, showAnswer: true, highlight: false, hard: false });
   assert.deepEqual(loadSettings(memory()), DEFAULT_SETTINGS);
   assert.deepEqual(loadSettings(null), DEFAULT_SETTINGS);
 });
 
 test('保存したものを読める', () => {
   const s = memory();
-  saveSettings(s, { tubes: 14, hue: 123, showAnswer: false });
-  assert.deepEqual(loadSettings(s), { tubes: 14, hue: 123, showAnswer: false });
+  const saved = { tubes: 14, hue: 123, showAnswer: false, highlight: true, hard: true };
+  saveSettings(s, saved);
+  assert.deepEqual(loadSettings(s), saved);
 });
 
 test('壊れた値は項目ごとに初期値へ戻す', () => {
-  const s = memory({ 'delta-sort/settings': JSON.stringify({ tubes: 7, hue: 400, showAnswer: 'yes' }) });
+  const s = memory({ 'delta-sort/settings': JSON.stringify({ tubes: 7, hue: 400, showAnswer: 'yes', highlight: 1, hard: 'yes' }) });
   assert.deepEqual(loadSettings(s), DEFAULT_SETTINGS);
   const broken = memory({ 'delta-sort/settings': '{' });
   assert.deepEqual(loadSettings(broken), DEFAULT_SETTINGS);

@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { canPour, pour, isSolved } from '../site/src/rules.js';
+import { CAPACITY, canPour, pour, isSolved } from '../site/src/rules.js';
 import { mulberry32, randomPuzzle } from '../tools/random.mjs';
 import { stateKey, heuristic, solve } from '../tools/solver.mjs';
 
 // 検算用の素朴な幅優先探索（小さい盤面専用）
-function bfs(start) {
+function bfs(start, mixed = false) {
   if (isSolved(start)) return 0;
   const seen = new Set([stateKey(start)]);
   let frontier = [start];
@@ -14,8 +14,8 @@ function bfs(start) {
     for (const tubes of frontier) {
       for (let a = 0; a < tubes.length; a++) {
         for (let b = 0; b < tubes.length; b++) {
-          if (!canPour(tubes, a, b)) continue;
-          const t = pour(tubes, a, b);
+          if (!canPour(tubes, a, b, CAPACITY, mixed)) continue;
+          const t = pour(tubes, a, b, CAPACITY, mixed);
           if (isSolved(t)) return depth;
           const k = stateKey(t);
           if (!seen.has(k)) { seen.add(k); next.push(t); }
@@ -81,5 +81,28 @@ test('小さいランダム問題で幅優先探索と一致する', () => {
   for (let i = 0; i < 30; i++) {
     const tubes = randomPuzzle(3, rand);
     assert.equal(solve(tubes), bfs(tubes), JSON.stringify(tubes));
+  }
+});
+
+test('heuristic は同じ色が複数の底にある分も数える', () => {
+  // 区切り1（試験管0の 0→1）＋ 色0が2本の底にある分1
+  assert.equal(heuristic([[0, 1], [0], []]), 2);
+});
+
+test('ハードの小さいランダム問題で幅優先探索と一致する', () => {
+  const rand = mulberry32(77);
+  for (let i = 0; i < 30; i++) {
+    const tubes = randomPuzzle(3, rand);
+    assert.equal(solve(tubes, { mixed: true }), bfs(tubes, true), JSON.stringify(tubes));
+  }
+});
+
+test('4色でも普通ルールは幅優先探索と一致し、ハードの最短は普通以下', () => {
+  const rand = mulberry32(4);
+  for (let i = 0; i < 5; i++) {
+    const tubes = randomPuzzle(4, rand);
+    const normal = solve(tubes);
+    assert.equal(normal, bfs(tubes), JSON.stringify(tubes));
+    assert.ok(solve(tubes, { mixed: true }) <= normal);
   }
 });

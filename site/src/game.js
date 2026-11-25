@@ -1,10 +1,10 @@
-import { canPour, pour } from './rules.js';
+import { CAPACITY, canPour, pour } from './rules.js';
 
 const clone = (tubes) => tubes.map((t) => t.slice());
 
-export function newGame(tubes) {
+export function newGame(tubes, { mixed = false } = {}) {
   const initial = clone(tubes);
-  return { initial, tubes: clone(initial), history: [], selected: null };
+  return { initial, tubes: clone(initial), history: [], selected: null, mixed };
 }
 
 // 試験管 i を押したときの次の状態。
@@ -12,8 +12,8 @@ export function tap(state, i) {
   const { tubes, selected } = state;
   if (selected === null) return tubes[i].length > 0 ? { ...state, selected: i } : state;
   if (selected === i) return { ...state, selected: null };
-  if (canPour(tubes, selected, i)) {
-    return { ...state, tubes: pour(tubes, selected, i), history: [...state.history, tubes], selected: null };
+  if (canPour(tubes, selected, i, CAPACITY, state.mixed)) {
+    return { ...state, tubes: pour(tubes, selected, i, CAPACITY, state.mixed), history: [...state.history, tubes], selected: null };
   }
   return { ...state, selected: tubes[i].length > 0 ? i : null };
 }
