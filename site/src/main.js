@@ -1,4 +1,4 @@
-import { EMPTY_TUBES, isSolved } from './rules.js';
+import { EMPTY_TUBES, isSolved, topRunLength } from './rules.js';
 import { makeChain, toCss } from './colors.js';
 import { rankOf, formatTime } from './result.js';
 import { newGame, tap, undo, restart, moveCount } from './game.js';
@@ -12,6 +12,14 @@ const storage = (() => {
 
 const WHEEL_CENTER = 90;
 const KNOB_RADIUS = 71;
+const LAYER_HEIGHT = 36; // style.css の .layer の高さと合わせる
+const LAYER_BOTTOM = 3; // style.css の .tube の padding-bottom と合わせる
+// オン・オフの2択ボタン（regenerate: 切り替えたら新しい問題にするか）
+const TOGGLES = [
+  { on: 'answer-on', off: 'answer-off', key: 'showAnswer', regenerate: false },
+  { on: 'highlight-on', off: 'highlight-off', key: 'highlight', regenerate: false },
+  { on: 'rule-hard', off: 'rule-normal', key: 'hard', regenerate: true },
+];
 
 let puzzles = null;
 let settings = loadSettings(storage);
@@ -42,11 +50,11 @@ function startProblem() {
   problem = {
     tubeCount: settings.tubes,
     index,
-    optimal: list[index].optimal,
+    optimal: settings.hard ? list[index].optimalHard : list[index].optimal,
     hue,
     colors: makeChain({ hue, channel, count: settings.tubes - EMPTY_TUBES }),
   };
-  game = newGame(list[index].tubes);
+  game = newGame(list[index].tubes, { mixed: settings.hard });
   stopTimer();
   startedAt = null;
   finishedMs = null;
@@ -90,6 +98,18 @@ function onRestart() {
   render();
 }
 
+// 一番上でつながっている液体の高さに合わせて、試験管の左右に光る線を置く
+function addGlow(el, tube) {
+  const run = topRunLength(tube);
+  for (const side of ['left', 'right']) {
+    const bar = document.createElement('span');
+    bar.className = `glow ${side}`;
+    bar.style.bottom = `${LAYER_BOTTOM + (tube.length - run) * LAYER_HEIGHT}px`;
+    bar.style.height = `${run * LAYER_HEIGHT}px`;
+    el.append(bar);
+  }
+}
+
 function render() {
   $('moves').textContent = String(moveCount(game));
 
@@ -106,6 +126,7 @@ function render() {
       layer.style.background = toCss(problem.colors[c]);
       el.append(layer);
     }
+    if (settings.highlight && game.selected === i) addGlow(el, tube);
     el.addEventListener('click', () => onTap(i));
     board.append(el);
   });
@@ -141,8 +162,10 @@ function renderSettings() {
     options.append(b);
   }
   $('hue-random').classList.toggle('on', settings.hue === null);
-  $('answer-on').classList.toggle('on', settings.showAnswer);
-  $('answer-off').classList.toggle('on', !settings.showAnswer);
+  for (const t of TOGGLES) {
+    $(t.on).classList.toggle('on', settings[t.key]);
+    $(t.off).classList.toggle('on', !settings[t.key]);
+  }
 
   const rad = (problem.hue * Math.PI) / 180;
   const knob = $('knob');
@@ -174,8 +197,10 @@ function bindEvents() {
     update({ hue });
   });
   $('hue-random').addEventListener('click', () => update({ hue: null }));
-  $('answer-on').addEventListener('click', () => update({ showAnswer: true }, { regenerate: false }));
-  $('answer-off').addEventListener('click', () => update({ showAnswer: false }, { regenerate: false }));
+  for (const t of TOGGLES) {
+    $(t.on).addEventListener('click', () => update({ [t.key]: true }, { regenerate: t.regenerate }));
+    $(t.off).addEventListener('click', () => update({ [t.key]: false }, { regenerate: t.regenerate }));
+  }
 
   $('next').addEventListener('click', () => $('clear').close());
   // クリア表示は Esc で閉じない。それでも閉じた場合（ブラウザによっては Esc 連打で閉じる）も、

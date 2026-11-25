@@ -34,12 +34,20 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
   border: 2px solid var(--glass); border-top: none; border-radius: 0 0 22px 22px;
   padding: 0 3px 3px; display: flex; flex-direction: column-reverse; transition: transform 0.12s;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 .tube:hover { background: transparent; }
 .tube.selected { transform: translateY(-18px); border-color: var(--text); }
 /* 液体は完全な単色。光沢・グラデーション・半透明・影を付けない */
 .layer { height: 36px; flex: none; }
 .layer:first-child { border-radius: 0 0 18px 18px; }
+/* ハイライト: 液体の外側（ガラスの左右）にだけ線を出し、液体や隣の試験管には光を重ねない */
+.glow {
+  position: absolute; width: 3px; border-radius: 2px; background: #fff;
+  box-shadow: 0 0 4px 1px rgb(255 255 255 / 0.6); pointer-events: none;
+}
+.glow.left { left: -7px; }
+.glow.right { right: -7px; }
 
 .answer {
   display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px;
@@ -56,6 +64,7 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
 .panel {
   background: var(--bg); color: var(--text); border: 1px solid var(--line);
   border-radius: 12px; padding: 20px; max-width: calc(100vw - 32px); box-sizing: border-box;
+  max-height: calc(100vh - 32px); overflow: auto;
 }
 .panel::backdrop { background: rgb(0 0 0 / 0.55); }
 .actions { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
@@ -78,6 +87,9 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
 .group { display: inline-flex; gap: 6px; flex-wrap: wrap; }
 .label { width: 110px; font-size: 13px; color: var(--muted); }
 .note { font-size: 12px; color: var(--muted); }
+.figure { margin: 0 0 4px 116px; }
+.figure svg { display: block; max-width: 100%; height: auto; }
+.figure figcaption { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 .clear { text-align: center; min-width: 280px; }
 .clear h2 { margin: 4px 0 8px; font-size: 20px; letter-spacing: 0.1em; }
@@ -88,4 +100,5 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
 @media (max-width: 560px) {
   .settings { grid-template-columns: 1fr; justify-items: center; }
   .board { gap: 24px 10px; }
+  .figure { margin-left: 0; }
 }

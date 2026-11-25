@@ -26,6 +26,7 @@
         <li>注げるのは、注ぎ先が空か、一番上が同じ色のとき（1本に4つまで）</li>
         <li>全部の試験管が1色ずつそろえばクリア。最短手数との差で S〜C のランクがつく</li>
         <li>下の帯は正解の色の並び（設定で消せる）。<kbd>Z</kbd> 取り消し　<kbd>R</kbd> やり直し</li>
+        <li>設定の「ハード」では、違う色の上にも重ねられる（その分、目で見分けるしかない）</li>
       </ul>
     </section>
   </main>
@@ -40,6 +41,47 @@
         <div class="row"><span class="label">試験管の本数</span><span id="tube-options" class="group"></span></div>
         <div class="row"><span class="label">ベース色</span><button id="hue-random" type="button">ランダム</button><span class="note">色相環をクリックで固定</span></div>
         <div class="row"><span class="label">正解の色を表示</span><span class="group"><button id="answer-on" type="button">オン</button><button id="answer-off" type="button">オフ</button></span></div>
+        <div class="row"><span class="label">ハイライト</span><span class="group"><button id="highlight-on" type="button">オン</button><button id="highlight-off" type="button">オフ</button></span></div>
+        <figure class="figure">
+          <svg viewBox="0 0 120 90" width="120" height="90" aria-hidden="true">
+            <path d="M48 8 V74 Q48 84 60 84 Q72 84 72 74 V8" fill="none" stroke="#8a8b92" stroke-width="2"/>
+            <rect x="51" y="66" width="18" height="15" fill="#4a7fd4"/>
+            <rect x="51" y="50" width="18" height="16" fill="#5aa36b"/>
+            <rect x="51" y="34" width="18" height="16" fill="#d98b3a"/>
+            <rect x="51" y="18" width="18" height="16" fill="#d98b3a"/>
+            <rect x="41" y="18" width="3" height="32" rx="1.5" fill="#fff"/>
+            <rect x="76" y="18" width="3" height="32" rx="1.5" fill="#fff"/>
+          </svg>
+          <figcaption>試験管を選ぶと、一番上でつながっている液体（例では上の2つ）の外側が光る</figcaption>
+        </figure>
+        <div class="row"><span class="label">ルール</span><span class="group"><button id="rule-normal" type="button">普通</button><button id="rule-hard" type="button">ハード</button></span></div>
+        <figure class="figure">
+          <svg viewBox="0 0 300 104" width="300" height="104" aria-hidden="true">
+            <g>
+              <path d="M20 24 V74 Q20 84 30 84 Q40 84 40 74 V24" fill="none" stroke="#8a8b92" stroke-width="2"/>
+              <rect x="23" y="67" width="14" height="14" fill="#5aa36b"/>
+              <rect x="23" y="53" width="14" height="14" fill="#d98b3a"/>
+              <path d="M90 24 V74 Q90 84 100 84 Q110 84 110 74 V24" fill="none" stroke="#8a8b92" stroke-width="2"/>
+              <rect x="93" y="67" width="14" height="14" fill="#4a7fd4"/>
+              <path d="M42 44 Q65 18 86 40" fill="none" stroke="#e6e6e8" stroke-width="1.5"/>
+              <polygon points="88,43 80,41 85,35" fill="#e6e6e8"/>
+              <text x="65" y="62" text-anchor="middle" font-size="18" fill="#e5534b">✕</text>
+              <text x="65" y="100" text-anchor="middle" font-size="11" fill="#9a9ba3">普通: 違う色には注げない</text>
+            </g>
+            <g transform="translate(150 0)">
+              <path d="M20 24 V74 Q20 84 30 84 Q40 84 40 74 V24" fill="none" stroke="#8a8b92" stroke-width="2"/>
+              <rect x="23" y="67" width="14" height="14" fill="#5aa36b"/>
+              <rect x="23" y="53" width="14" height="14" fill="#d98b3a"/>
+              <path d="M90 24 V74 Q90 84 100 84 Q110 84 110 74 V24" fill="none" stroke="#8a8b92" stroke-width="2"/>
+              <rect x="93" y="67" width="14" height="14" fill="#4a7fd4"/>
+              <path d="M42 44 Q65 18 86 40" fill="none" stroke="#e6e6e8" stroke-width="1.5"/>
+              <polygon points="88,43 80,41 85,35" fill="#e6e6e8"/>
+              <text x="65" y="62" text-anchor="middle" font-size="18" fill="#57ab5a">○</text>
+              <text x="65" y="100" text-anchor="middle" font-size="11" fill="#9a9ba3">ハード: 違う色にも重ねられる</text>
+            </g>
+          </svg>
+          <figcaption>ハードでは「注げない＝違う色」という手がかりが無くなる。最短手数もハードの値になる</figcaption>
+        </figure>
       </div>
     </div>
     <div class="actions"><button id="close-settings" type="button">閉じる</button></div>
