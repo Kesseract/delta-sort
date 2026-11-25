@@ -175,12 +175,13 @@ function bindEvents() {
   $('answer-on').addEventListener('click', () => update({ showAnswer: true }, { regenerate: false }));
   $('answer-off').addEventListener('click', () => update({ showAnswer: false }, { regenerate: false }));
 
-  $('next').addEventListener('click', () => {
-    $('clear').close();
-    startProblem();
-  });
-  // クリア表示は Esc で閉じない（閉じると操作できない盤面だけが残るため）
+  $('next').addEventListener('click', () => $('clear').close());
+  // クリア表示は Esc で閉じない。それでも閉じた場合（ブラウザによっては Esc 連打で閉じる）も、
+  // 操作できない解けた盤面を残さず次の問題へ進む
   $('clear').addEventListener('cancel', (e) => e.preventDefault());
+  $('clear').addEventListener('close', () => {
+    if (solved()) startProblem();
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -192,8 +193,14 @@ function bindEvents() {
 }
 
 async function init() {
-  const res = await fetch('puzzles.json');
-  puzzles = await res.json();
+  try {
+    const res = await fetch('puzzles.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    puzzles = await res.json();
+  } catch (err) {
+    $('board').textContent = `問題データを読み込めませんでした（${err.message}）。再読み込みしてください。`;
+    return;
+  }
   bindEvents();
   startProblem();
 }

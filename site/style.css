@@ -33,6 +33,7 @@ kbd { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: va
   appearance: none; background: transparent; width: 44px; height: 156px; box-sizing: border-box;
   border: 2px solid var(--glass); border-top: none; border-radius: 0 0 22px 22px;
   padding: 0 3px 3px; display: flex; flex-direction: column-reverse; transition: transform 0.12s;
+  touch-action: manipulation;
 }
 .tube:hover { background: transparent; }
 .tube.selected { transform: translateY(-18px); border-color: var(--text); }
