@@ -50,7 +50,7 @@ function startProblem() {
   problem = {
     tubeCount: settings.tubes,
     index,
-    optimal: settings.hard ? list[index].optimalHard : list[index].optimal,
+    optimal: settings.hard ? (list[index].optimalHard ?? list[index].optimal) : list[index].optimal,
     hue,
     colors: makeChain({ hue, channel, count: settings.tubes - EMPTY_TUBES }),
   };
